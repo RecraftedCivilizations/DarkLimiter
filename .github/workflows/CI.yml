@@ -1,0 +1,203 @@
+name: Ci
+
+on: push
+
+jobs:
+  DevBuild:
+    name: Build the dev version
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/Checkout@v2
+
+      - name: Set credentials
+        run: |
+          echo -e '\nRecraftedCivilizationsUsername=darkvanityoflight\n' >> gradle.properties
+          echo -e 'RecraftedCivilizationsPassword=${{ secrets.MVN_KEY }}\n' >> gradle.properties
+      - name: Build
+        run: ./gradlew build -x test
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@master
+        with:
+          name: Dev-Build
+          path: build/
+
+  UnitTest:
+    name: Run tests
+    runs-on: ubuntu-latest
+    needs: [DevBuild]
+
+    steps:
+      - name: Checkout code
+        uses: actions/Checkout@v2
+
+      - name: Download the dev build
+        uses: actions/download-artifact@master
+        with:
+          name: Dev-Build
+          path: build/
+
+      - name: Set credentials
+        run: |
+          echo -e '\nRecraftedCivilizationsUsername=darkvanityoflight\n' >> gradle.properties
+          echo -e 'RecraftedCivilizationsPassword=${{ secrets.MVN_KEY }}\n' >> gradle.properties
+      - name: Run the tests
+        run: ./gradlew test
+      - name: Upload test results
+        uses: actions/upload-artifact@master
+        with:
+          name: test-results
+          path: build/reports/tests/test
+
+  ProdBuild:
+    name: Create Production build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/Checkout@v2
+
+      - name: Set credentials
+        run: |
+          echo -e '\nRecraftedCivilizationsUsername=darkvanityoflight\n' >> gradle.properties
+          echo -e 'RecraftedCivilizationsPassword=${{ secrets.MVN_KEY }}\n' >> gradle.properties
+      - name: Build
+        run: ./gradlew shadowJar -x test
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@master
+        with:
+          name: Prod-Build
+          path: build/
+  Docs:
+    name: Generate Docs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/Checkout@v2
+
+      - name: Set credentials
+        run: |
+          echo -e '\nRecraftedCivilizationsUsername=darkvanityoflight\n' >> gradle.properties
+          echo -e 'RecraftedCivilizationsPassword=${{ secrets.MVN_KEY }}\n' >> gradle.properties
+      - name: Generate docs
+        run: ./gradlew dokkaHtml
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@master
+        with:
+          name: Docs
+          path: build/dokka/
+
+  UploadAll:
+    name: Upload files
+    runs-on: ubuntu-latest
+    needs: [DevBuild, UnitTest, ProdBuild, Docs]
+
+    steps:
+      - name: Download the dev build
+        uses: actions/download-artifact@master
+        with:
+          name: Dev-Build
+          path: dev-build
+      - name: Download the unit-test results
+        uses: actions/download-artifact@master
+        with:
+          name: test-results
+          path: test-results
+      - name: Download the Production build
+        uses: actions/download-artifact@master
+        with:
+          name: Prod-Build
+          path: prod-build
+      - name: Download the docs
+        uses: actions/download-artifact@master
+        with:
+          name: Docs
+          path: docs
+      - name: Checkout source repo
+        uses: actions/Checkout@v2
+        with:
+          path: ./tmp/source
+      - name: Checkout destination repo
+        uses: actions/Checkout@v2
+        with:
+          repository: RecraftedCivilizations/RecraftedCivilizations.github.io
+          ssh-key: ${{ secrets.SSH_KEY }}
+          path: ./tmp/destination
+      - name: Get the version
+        run: |
+          while read line; do
+              if [[ "$line" =~ version\ .+\'$ ]]
+              then
+                  VERSION=${line:9}
+                  VERSION=${VERSION::-1}
+              fi
+          done < ./tmp/source/build.gradle
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo $VERSION
+      - name: Copie the files
+        run: |
+          if [ -d "./tmp/destination/Projects/${{ github.REPOSITORY}}/docs/$VERSION" ]
+          then
+              echo "Deleting old artifacts for the same version"
+              rm -rf ./tmp/destination/Projects/{{ github.REPOSITORY}}/docs/$VERSION
+          fi
+          mkdir -p ./tmp/destination/Projects/${{ github.REPOSITORY }}/docs/$VERSION
+          if [ -d "./tmp/destination/Projects/${{ github.REPOSITORY}}/prod-builds/$VERSION" ]
+          then
+              echo "Deleting old artifacts for the same version"
+              rm -rf ./tmp/destination/Projects/{{ github.REPOSITORY}}/prod-builds/$VERSION
+          fi
+          mkdir -p ./tmp/destination/Projects/${{ github.REPOSITORY }}/prod-builds/$VERSION
+          if [ -d "./tmp/destination/Projects/${{ github.REPOSITORY}}/dev-builds/$VERSION" ]
+          then
+              echo "Deleting old artifacts for the same version"
+              rm -rf ./tmp/destination/Projects/{{ github.REPOSITORY}}/dev-builds/$VERSION
+          fi
+          mkdir -p ./tmp/destination/Projects/${{ github.REPOSITORY }}/dev-builds/$VERSION
+          if [ -d "./tmp/destination/Projects/${{ github.REPOSITORY}}/tests/$VERSION" ]
+          then
+              echo "Deleting old artifacts for the same version"
+              rm -rf ./tmp/destination/Projects/{{ github.REPOSITORY}}/tests/$VERSION
+          fi
+          mkdir -p ./tmp/destination/Projects/${{ github.REPOSITORY }}/tests/$VERSION
+          cp -r ./docs/html/. ./tmp/destination/Projects/${{ github.REPOSITORY }}/docs/$VERSION
+          cp -r ./dev-build/libs/. ./tmp/destination/Projects/${{ github.REPOSITORY }}/dev-builds/$VERSION
+          cp -r ./prod-build/libs/. ./tmp/destination/Projects/${{ github.REPOSITORY }}/prod-builds/$VERSION
+          cp -r ./test-results/. ./tmp/destination/Projects/${{ github.REPOSITORY }}/tests/$VERSION
+      - name: List destination dir and changes
+        working-directory: ./tmp/destination
+        run: |
+          ls -R Projects/${{ github.REPOSITORY }}
+          git status
+      - name: Push the changes
+        working-directory: ./tmp/destination
+        run: |
+          git config --global user.name "RecraftedCivilizationsCI"
+          git config --global user.email "recrafted-cd@recraftedcivilizations.com"
+          git add Projects/${{ github.REPOSITORY }}
+          git commit -m "feat: Upload CI results for ${{ github.REPOSITORY }} version $VERSION"
+          git pull --ff
+          git push
+  Publish:
+    runs-on: ubuntu-latest
+    needs: [DevBuild, UnitTest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/Checkout@v2
+
+      - name: Download the dev build
+        uses: actions/download-artifact@master
+        with:
+          name: Dev-Build
+          path: build/
+
+      - name: Set credentials
+        run: |
+          echo -e '\nRecraftedCivilizationsUsername=darkvanityoflight\n' >> gradle.properties
+          echo -e 'RecraftedCivilizationsPassword=${{ secrets.MVN_KEY }}\n' >> gradle.properties
+      - name: Publish
+        run: ./gradlew publish

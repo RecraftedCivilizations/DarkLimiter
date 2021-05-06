@@ -1,0 +1,87 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.4.10'
+    id 'org.jetbrains.dokka' version '1.4.10.2'
+    id 'com.github.johnrengelman.shadow' version '2.0.4'
+    id 'ru.endlesscode.bukkitgradle' version '0.8.2'
+    id 'maven-publish'
+}
+
+group 'com.github.recraftedcivilizations'
+version '1.0-SNAPSHOT'
+
+// plugin.yml values
+def pluginName = ''
+def pluginDescription = ''
+def pluginAuthors = []
+
+// Base repos
+repositories {
+    mavenCentral()
+    maven { url 'https://repo.repsy.io/mvn/darkvanityoflight/recraftedcivilizations' }
+    spigot()
+}
+// Kotlin stuff
+dependencies {
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+// Minecraft deps
+dependencies {
+    compileOnly spigotApi()
+    compileOnly 'com.github.recraftedcivilizations:RecraftedCore:3.+'
+}
+
+// Test stuff
+test {
+    useJUnitPlatform()
+}
+
+dependencies {
+    testCompile spigotApi()
+    testCompile 'com.github.recraftedcivilizations:RecraftedCore:3.+'
+}
+
+// Jvm Target
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+// plugin.yml
+bukkit {
+    meta {
+        name = pluginName
+        description = pluginDescription
+        main = group + '.' + pluginName + '.' + 'Main'
+        version = version
+        authors = pluginAuthors
+    }
+
+}
+
+publishing {
+    publications {
+        recraftedCore(MavenPublication) {
+            groupId = 'com.github.recraftedcivilizations'
+            artifactId = pluginName
+            version = this.version
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = 'RecraftedCivilizations'
+            //credentials(PasswordCredentials)
+            url = 'https://repo.repsy.io/mvn/darkvanityoflight/recraftedcivilizations'
+
+            credentials {
+                username project.RecraftedCivilizationsUsername
+                password project.RecraftedCivilizationsPassword
+            }
+        }
+    }
+}
