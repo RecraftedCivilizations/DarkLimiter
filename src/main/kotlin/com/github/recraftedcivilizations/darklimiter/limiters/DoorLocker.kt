@@ -5,6 +5,7 @@ import com.github.recraftedcivilizations.darkcitizens.DarkCitizens
 import com.github.recraftedcivilizations.darkcitizens.dPlayer.DPlayerManager
 import com.github.recraftedcivilizations.darkcitizens.groups.Group
 import com.github.recraftedcivilizations.darkcitizens.jobs.JobManager
+import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Door
@@ -14,6 +15,20 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import java.util.*
+
+fun Block.getUpperHalf(): Block{
+
+    if (this.blockData !is Door){
+        return this
+    }
+
+    if ((blockData as Door).half == Bisected.Half.TOP){
+        return this
+    }
+
+    return world.getBlockAt(x, y+1, z)
+
+}
 
 class DoorLocker(private val dPlayerManager: DPlayerManager = DarkCitizens.dPlayerManager, private val jobManager: JobManager = DarkCitizens.jobManager, private val bukkitWrapper: BukkitWrapper = BukkitWrapper()): Listener {
     private val groupLockedDoors: MutableMap<Block, String> = emptyMap<Block, String>().toMutableMap()
