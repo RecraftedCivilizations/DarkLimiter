@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import java.util.*
 
 class DoorLocker(private val dPlayerManager: DPlayerManager = DarkCitizens.dPlayerManager, private val jobManager: JobManager = DarkCitizens.jobManager, private val bukkitWrapper: BukkitWrapper = BukkitWrapper()): Listener {
@@ -123,6 +124,18 @@ class DoorLocker(private val dPlayerManager: DPlayerManager = DarkCitizens.dPlay
             if (!canOpen){
                 // Cancel the click event
                 e.isCancelled = true
+            }
+        }
+    }
+
+    /**
+     * Clean all locked doors for a leaving player
+     */
+    @EventHandler
+    fun onLeave(e: PlayerQuitEvent){
+        for ((door, player) in playerLockedDoors.entries){
+            if (player == e.player.uniqueId){
+                playerLockedDoors.remove(door)
             }
         }
     }
