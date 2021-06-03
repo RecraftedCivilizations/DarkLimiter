@@ -57,7 +57,7 @@ bukkit {
     meta {
         name = pluginName
         description = pluginDescription
-        main = group + '.' + pluginName.toLowerCase() + '.' + 'Main'
+        main = group + '.' + pluginName.toLowerCase() + '.' + pluginName
         version = version
         authors = pluginAuthors
     }
