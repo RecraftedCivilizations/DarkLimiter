@@ -144,7 +144,7 @@ class DoorLocker(private val dPlayerManager: DPlayerManager = DarkCitizens.dPlay
     fun onLeave(e: PlayerQuitEvent){
         for ((door, player) in playerLockedDoors.entries){
             if (player == e.player.uniqueId){
-                playerLockedDoors.remove(door)
+                unlockDoor(door)
             }
         }
     }
