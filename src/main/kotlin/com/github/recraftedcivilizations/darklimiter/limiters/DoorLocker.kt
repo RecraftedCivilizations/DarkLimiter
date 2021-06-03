@@ -38,6 +38,15 @@ class DoorLocker(private val dPlayerManager: DPlayerManager = DarkCitizens.dPlay
     }
 
     /**
+     * Unlock a door
+     * @param door The door to unlock, IMPORTANT: YOU HAVE TO USE THE UPPER HALF OF THE DOOR
+     */
+    fun unlockDoor(door: Block){
+        playerLockedDoors.remove(door)
+        groupLockedDoors.remove(door)
+    }
+
+    /**
      * Lock a door for a player
      * @param door The door to lock
      * @param player The uuid of the player to lock the door for
