@@ -39,6 +39,10 @@ class DoorLocker(private val dPlayerManager: DPlayerManager = DarkCitizens.dPlay
     private val groupLockedDoors: MutableMap<Block, String> = emptyMap<Block, String>().toMutableMap()
     private val playerLockedDoors: MutableMap<Block, UUID> = emptyMap<Block, UUID>().toMutableMap()
 
+    constructor(groupLockedDoor: Map<Block, String>, dPlayerManager: DPlayerManager = DarkCitizens.dPlayerManager, jobManager: JobManager = DarkCitizens.jobManager, bukkitWrapper: BukkitWrapper = BukkitWrapper()) : this(dPlayerManager, jobManager, bukkitWrapper) {
+        this.groupLockedDoors.putAll(groupLockedDoor)
+    }
+
     /**
      * Lock a door for a group
      * @param door The door to lock
