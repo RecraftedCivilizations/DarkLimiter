@@ -41,29 +41,29 @@ class DoorLocker(private val dPlayerManager: DPlayerManager = DarkCitizens.dPlay
 
     /**
      * Lock a door for a group
-     * @param door The door to lock, IMPORTANT: ONLY REGISTER THE UPPER HALF OF THE DOOR HERE
+     * @param door The door to lock
      * @param group The group to lock for
      */
     fun lockDoor(door: Block, group: Group){
-        lockDoor(door, group.name)
+        lockDoor(door.getUpperHalf(), group.name)
     }
 
     /**
      * Lock a door for a group name
-     * @param door The door to lock, IMPORTANT: ONLY REGISTER THE UPPER HALF OF THE DOOR HERE
+     * @param door The door to lock
      * @param group The group name to lock for
      */
     fun lockDoor(door: Block, group: String){
-        groupLockedDoors[door] = group
+        groupLockedDoors[door.getUpperHalf()] = group
     }
 
     /**
      * Unlock a door
-     * @param door The door to unlock, IMPORTANT: YOU HAVE TO USE THE UPPER HALF OF THE DOOR
+     * @param door The door to unlock
      */
     fun unlockDoor(door: Block){
-        playerLockedDoors.remove(door)
-        groupLockedDoors.remove(door)
+        playerLockedDoors.remove(door.getUpperHalf())
+        groupLockedDoors.remove(door.getUpperHalf())
     }
 
     /**
