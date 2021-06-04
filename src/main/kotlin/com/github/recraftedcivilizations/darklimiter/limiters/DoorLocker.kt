@@ -16,29 +16,59 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import java.util.*
 
+/**
+ * @author DarkVanityOfLight
+ */
+
+/**
+ * Get the upper half of a door block
+ * @return The original block if it is no door or it is already the upper half, else return the upper half of this door
+ */
 fun Block.getUpperHalf(): Block{
 
+    // Check that we have a door
     if (this.blockData !is Door){
+        // If not just return the original block
         return this
     }
 
+    // Check that we don't already have the top
     if ((blockData as Door).half == Bisected.Half.TOP){
+        // If we have, just return this block
         return this
     }
 
+    // Get the block one above this one and return it
     return world.getBlockAt(x, y+1, z)
 
 }
 
+/**
+ * Represents the different groups a door can be locked for
+ */
 enum class LockedFor{
     Player,
     Group
 }
 
+/**
+ * This locker can lock door blocks and prevent players from opening the,
+ * @param dPlayerManager An optional dPlayerManager the default one is from DarkCitizens main class
+ * @param jobManager An optional jobManager the default one is from DarkCitizens main class
+ * @param bukkitWrapper An optional bukkit wrapper
+ * @constructor Construct using an additional base map of group locked doors
+ */
 class DoorLocker(private val dPlayerManager: DPlayerManager = DarkCitizens.dPlayerManager, private val jobManager: JobManager = DarkCitizens.jobManager, private val bukkitWrapper: BukkitWrapper = BukkitWrapper()): Listener {
     private val groupLockedDoors: MutableMap<Block, String> = emptyMap<Block, String>().toMutableMap()
     private val playerLockedDoors: MutableMap<Block, UUID> = emptyMap<Block, UUID>().toMutableMap()
 
+    /**
+     * Construct using an additional base map of group locked doors
+     * @param groupLockedDoor A list of already locked doors that should be checked by this locker
+     * @param dPlayerManager An optional dPlayerManager the default one is from DarkCitizens main class
+     * @param jobManager An optional jobManager the default one is from DarkCitizens main class
+     * @param bukkitWrapper An optional bukkit wrapper
+     */
     constructor(groupLockedDoor: Map<Block, String>, dPlayerManager: DPlayerManager = DarkCitizens.dPlayerManager, jobManager: JobManager = DarkCitizens.jobManager, bukkitWrapper: BukkitWrapper = BukkitWrapper()) : this(dPlayerManager, jobManager, bukkitWrapper) {
         this.groupLockedDoors.putAll(groupLockedDoor)
     }
