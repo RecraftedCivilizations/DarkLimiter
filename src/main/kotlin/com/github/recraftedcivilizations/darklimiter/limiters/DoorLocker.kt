@@ -153,6 +153,23 @@ class DoorLocker(private val dPlayerManager: DPlayerManager = DarkCitizens.dPlay
     }
 
     /**
+     * Return the player uuid the door is locked for
+     * @param door The door block to check
+     * @return the player UUID or null if the door doesn't belong to a player
+     */
+    fun lockedForPlayer(door: Block): UUID?{
+        val isLockedFor = isLocked(door)
+        // Check if the door is locked for a player
+        return  if (isLockedFor == LockedFor.Player){
+            // Get the player uuid for the door
+            playerLockedDoors[door.getUpperHalf()]
+        }else{
+            // The door belongs to no one or a group
+            null
+        }
+    }
+
+    /**
      * Check if someone can open the door
      * @param door The door to check for, can be upper or lower half
      * @param player The player to check for
