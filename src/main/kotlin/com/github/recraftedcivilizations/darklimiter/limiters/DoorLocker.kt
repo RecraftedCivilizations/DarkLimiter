@@ -198,6 +198,23 @@ class DoorLocker(private val dPlayerManager: DPlayerManager = DarkCitizens.dPlay
 
     }
 
+    /**
+     * Reset ALL locked doors
+     */
+    fun resetAll() {
+        // Remove all player doors
+        val pIterator = playerLockedDoors.iterator()
+        while (pIterator.hasNext()){
+            pIterator.remove()
+        }
+
+        // Remove all group doors
+        val gIterator = groupLockedDoors.iterator()
+        while (gIterator.hasNext()){
+            gIterator.remove()
+        }
+    }
+
     companion object{
         // This regex will check if a  block is a door
         val WOOD_DOOR_REGEX = Regex("\\w+_DOOR")
