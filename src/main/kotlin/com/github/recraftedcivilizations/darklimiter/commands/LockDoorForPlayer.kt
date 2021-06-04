@@ -47,15 +47,7 @@ class LockDoorForPlayer(private val doorLocker: DoorLocker): CommandExecutor, Li
 
         // Check that we left click a door with a stick
         if (isDoor && isLeftClick && isStick){
-            var doorBlock = e.clickedBlock!!
-
-            // We only want to register and check for the upper half blocks
-            if ((doorBlock.blockData as Door).half == Bisected.Half.BOTTOM){
-                // Get the world we are currently in
-                val world = e.player.world
-                // The upper half of the door is at the same position as the door, but y + 1
-                doorBlock = world.getBlockAt(doorBlock.x, doorBlock.y + 1, doorBlock.z)
-            }
+            var doorBlock = e.clickedBlock!!.getUpperHalf()
 
             // Set the selected block to the door
             selectedBlocks[e.player.uniqueId] = doorBlock

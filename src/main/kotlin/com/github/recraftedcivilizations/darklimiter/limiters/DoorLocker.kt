@@ -68,16 +68,8 @@ class DoorLocker(private val dPlayerManager: DPlayerManager = DarkCitizens.dPlay
      */
     fun lockDoor(door: Block, player: UUID){
 
-        var upperHalf = door
 
-        if ((door.blockData as Door).half == Bisected.Half.BOTTOM){
-            // Get the world we are currently in
-            val world = bukkitWrapper.getPlayer(player)!!.world
-            // The upper half of the door is at the same position as the door, but y + 1
-            upperHalf = world.getBlockAt(door.x, door.y + 1, door.z)
-        }
-
-        playerLockedDoors[door] = player
+        playerLockedDoors[door.getUpperHalf()] = player
     }
 
     /**
@@ -89,14 +81,7 @@ class DoorLocker(private val dPlayerManager: DPlayerManager = DarkCitizens.dPlay
         val dPlayer = dPlayerManager.getDPlayer(player)
         val playerGroup = jobManager.getJob(dPlayer?.job)?.group
 
-        var upperHalf = door
-
-        if ((door.blockData as Door).half == Bisected.Half.BOTTOM){
-            // Get the world we are currently in
-            val world = bukkitWrapper.getPlayer(player)!!.world
-            // The upper half of the door is at the same position as the door, but y + 1
-            upperHalf = world.getBlockAt(door.x, door.y + 1, door.z)
-        }
+        var upperHalf = door.getUpperHalf()
 
         // Get the group or null that owns this door
         val group = groupLockedDoors[upperHalf]
@@ -133,15 +118,7 @@ class DoorLocker(private val dPlayerManager: DPlayerManager = DarkCitizens.dPlay
 
         // Player tried to open a door
         if (isDoor  && isRightClick){
-            var doorBlock = e.clickedBlock!!
-
-            // We only want to register and check for the upper half blocks
-            if ((doorBlock.blockData as Door).half == Bisected.Half.BOTTOM){
-                // Get the world we are currently in
-                val world = e.player.world
-                // The upper half of the door is at the same position as the door, but y + 1
-                doorBlock = world.getBlockAt(doorBlock.x, doorBlock.y + 1, doorBlock.z)
-            }
+            var doorBlock = e.clickedBlock!!.getUpperHalf()
 
             val canOpen = canOpen(doorBlock, e.player.uniqueId)
             // If the player cannot open this door
