@@ -1,6 +1,7 @@
 package com.github.recraftedcivilizations.darklimiter.commands
 
 import com.github.recraftedcivilizations.darklimiter.limiters.DoorLocker
+import com.github.recraftedcivilizations.darklimiter.limiters.LockedFor
 import com.github.recraftedcivilizations.darklimiter.limiters.getUpperHalf
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -32,7 +33,21 @@ class LockDoorForPlayer(private val doorLocker: DoorLocker): CommandExecutor, Li
             return false
         }
 
-        doorLocker.lockDoor(block.getUpperHalf(), sender.uniqueId)
+        val upperHalf = block.getUpperHalf()
+
+        when (doorLocker.isLocked(upperHalf)) {
+            null -> {
+                doorLocker.lockDoor(block.getUpperHalf(), sender.uniqueId)
+            }
+            LockedFor.Player -> {
+                val lockedFor = doorLocker.lockedFor(block)
+                sender.sendMessage("${ChatColor.RED}This door is already locked by the player $lockedFor")
+            }
+            LockedFor.Group -> {
+                val lockedFor = doorLocker.lockedFor(block)
+                sender.sendMessage("${ChatColor.RED}This door is already locked by the group $lockedFor")
+            }
+        }
         return true
     }
 
