@@ -30,6 +30,11 @@ fun Block.getUpperHalf(): Block{
 
 }
 
+enum class LockedFor{
+    Player,
+    Group
+}
+
 class DoorLocker(private val dPlayerManager: DPlayerManager = DarkCitizens.dPlayerManager, private val jobManager: JobManager = DarkCitizens.jobManager, private val bukkitWrapper: BukkitWrapper = BukkitWrapper()): Listener {
     private val groupLockedDoors: MutableMap<Block, String> = emptyMap<Block, String>().toMutableMap()
     private val playerLockedDoors: MutableMap<Block, UUID> = emptyMap<Block, UUID>().toMutableMap()
@@ -70,6 +75,26 @@ class DoorLocker(private val dPlayerManager: DPlayerManager = DarkCitizens.dPlay
 
 
         playerLockedDoors[door.getUpperHalf()] = player
+    }
+
+    /**
+     * Check if a door is already locked
+     * @param door One of the door blocks of the door
+     * @return The type this door is locked for or null if it isn't locked
+     */
+    fun isLocked(door: Block): LockedFor?{
+        return when {
+            door.getUpperHalf() in groupLockedDoors.keys -> {
+                LockedFor.Group
+            }
+            door.getUpperHalf() in playerLockedDoors.keys -> {
+                LockedFor.Player
+            }
+            else -> {
+                null
+            }
+        }
+
     }
 
     /**
