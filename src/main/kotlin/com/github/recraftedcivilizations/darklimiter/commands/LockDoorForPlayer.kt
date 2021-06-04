@@ -19,13 +19,12 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import java.util.*
 
-class LockDoorForPlayer(private val doorLocker: DoorLocker): CommandExecutor, Listener {
-    private val selectedBlocks = emptyMap<UUID, Block>().toMutableMap()
+class LockDoorForPlayer(private val doorLocker: DoorLocker, private val doorSelector: DoorSelector,): CommandExecutor, Listener {
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender !is Player){ sender.sendMessage("Fuck off console weirdo"); return true }
 
-        val block = selectedBlocks[sender.uniqueId]
+        val block = doorSelector.getSelectedBlock(sender.uniqueId)
 
         // Send an error message if the player hasn't selected a block
         if (block == null){
@@ -49,31 +48,5 @@ class LockDoorForPlayer(private val doorLocker: DoorLocker): CommandExecutor, Li
             }
         }
         return true
-    }
-
-    @EventHandler
-    fun onPlayerInteraction(e: PlayerInteractEvent){
-        // Check if the clicked block is a door
-        val isDoor = e.clickedBlock?.type?.name?.let { DoorLocker.WOOD_DOOR_REGEX.matches(it) }?: false
-        // Check that we have a left click
-        val isLeftClick = e.action == Action.LEFT_CLICK_BLOCK
-        // Check that we use a stick for the left click
-        val isStick = e.item?.type == Material.STICK
-
-        // Check that we left click a door with a stick
-        if (isDoor && isLeftClick && isStick){
-            var doorBlock = e.clickedBlock!!.getUpperHalf()
-
-            // Set the selected block to the door
-            selectedBlocks[e.player.uniqueId] = doorBlock
-
-            // Cancel the event so we stop clicking
-            e.isCancelled = true
-        }
-    }
-
-    @EventHandler
-    fun onPlayerLeave(e: PlayerQuitEvent){
-        selectedBlocks.remove(e.player.uniqueId)
     }
 }
