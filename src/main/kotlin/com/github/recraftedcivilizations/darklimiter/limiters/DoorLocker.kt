@@ -88,6 +88,8 @@ class DoorLocker(private val dPlayerManager: DPlayerManager = DarkCitizens.dPlay
      * @param group The group name to lock for
      */
     fun lockDoor(door: Block, group: String){
+        // Check that we don't lock doors twice
+        if (isLocked(door) != null) return
         groupLockedDoors[door.getUpperHalf()] = group
     }
 
@@ -106,8 +108,8 @@ class DoorLocker(private val dPlayerManager: DPlayerManager = DarkCitizens.dPlay
      * @param player The uuid of the player to lock the door for
      */
     fun lockDoor(door: Block, player: UUID){
-
-
+        // Check that we don't lock doors twice
+        if (isLocked(door) != null) return
         playerLockedDoors[door.getUpperHalf()] = player
     }
 
