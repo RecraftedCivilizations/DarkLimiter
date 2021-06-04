@@ -202,12 +202,55 @@ class DoorLocker(private val dPlayerManager: DPlayerManager = DarkCitizens.dPlay
      * Reset ALL locked doors
      */
     fun resetAll() {
+        resetForAllGroups()
+        resetForAllPlayers()
+    }
+
+    /**
+     * Reset all doors claimed by a specific player
+     * @param uuid The players uuid
+     */
+    fun resetAllForPlayer(uuid: UUID){
+        // Loop through all player locked door entries
+        for ((door, iUUID) in playerLockedDoors.entries){
+            // If the door uuid is the same as the from the player
+            if (iUUID == uuid){
+                // Remove the door from the locked doors
+                playerLockedDoors.remove(door)
+            }
+        }
+    }
+
+    /**
+     * Reset all doors claimed by a specific group
+     * @param name The name of the group
+     */
+    fun resetAllForGroup(name: String){
+        // Loop through all group doors
+        for ((door, gName) in groupLockedDoors.entries){
+            // If we find the same name as we search for
+            if (gName == name){
+                // Remove the entry
+                groupLockedDoors.remove(door)
+            }
+        }
+    }
+
+    /**
+     * Reset all doors for all players
+     */
+    fun resetForAllPlayers(){
         // Remove all player doors
         val pIterator = playerLockedDoors.iterator()
         while (pIterator.hasNext()){
             pIterator.remove()
         }
+    }
 
+    /**
+     * Reset all doors for all groups
+     */
+    fun resetForAllGroups(){
         // Remove all group doors
         val gIterator = groupLockedDoors.iterator()
         while (gIterator.hasNext()){
