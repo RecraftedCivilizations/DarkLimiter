@@ -1,0 +1,50 @@
+depend:
+  - DarkCitizens
+
+commands:
+  lock:
+    description: Lock a door for a player
+    usage: Select a door using leftclick with a stick and then /lock
+    permission: dlm.lock.player
+    permission-message: You are not allowed to lock doors
+  unlock:
+    description: Unlock a door
+    usage: Select a door you own using leftclick with a stick and then /unlock
+    permission: dlm.unlock.player
+    permission-message: You are not allowed to unlock doors
+  lockForGroup:
+    usage: Select a door using leftclick with a stick and then /lockForGroup <Group name>
+    permission: dlm.lock.group
+    permission-message: You are not allowed to lock doors for groups
+  unlockGroupDoor:
+    usage: Select a door using leftclick with a stick and then /unlockGroupDoor
+    permission: dlm.unlock.group
+    permission-message: You are not allowed to unlock group doors
+  reset:
+    usage: /reset to reset ALL doors, /reset <group|player> to clear all doors of the group or the player
+    permission: dlm.reset
+    permission-message: You are not allowed to reset doors
+  forceUnlock:
+    usage: Select a player door using leftclick with a stick and then /forceUnlock
+    permission: dlm.unlock.force
+    permission-message: You are not allowed to force unlock player doors
+
+permissions:
+  dlm.lock.player:
+    default: true
+    description: Enable a player to lock doors
+  dlm.unlock.player:
+    default: true
+    description: Enable a player to unlock his doors
+  dlm.lock.group:
+    default: op
+    description: Enable a player to lock doors for a group
+  dlm.unlock.group:
+    default: op
+    description: Enable a player to unlock group doors
+  dlm.reset:
+    default: op
+    description: Allow a player to reset ALL doors
+  dlm.unlock.force:
+    default: op
+    description: Enable a player to force unlock doors of other players
