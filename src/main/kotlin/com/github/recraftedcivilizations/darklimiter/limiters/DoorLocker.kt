@@ -266,7 +266,7 @@ class DoorLocker(private val dPlayerManager: DPlayerManager = DarkCitizens.dPlay
     /**
      * Cancel the door opening if the player isn't allowed to open the door
      */
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     fun onInteraction(e: PlayerInteractEvent){
         // Check if the clicked block is a door
         val isDoor = e.clickedBlock?.type?.name?.let { WOOD_DOOR_REGEX.matches(it) }?: false
@@ -289,7 +289,7 @@ class DoorLocker(private val dPlayerManager: DPlayerManager = DarkCitizens.dPlay
     /**
      * Clean all locked doors for a leaving player
      */
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     fun onLeave(e: PlayerQuitEvent){
         for ((door, player) in playerLockedDoors.entries){
             if (player == e.player.uniqueId){

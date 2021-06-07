@@ -40,7 +40,7 @@ class DoorSelector: Listener {
         return selectedBlocks[uuid]
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     fun onPlayerInteraction(e: PlayerInteractEvent){
         // Check if the clicked block is a door
         val isDoor = e.clickedBlock?.type?.name?.let { DoorLocker.WOOD_DOOR_REGEX.matches(it) }?: false
@@ -61,7 +61,7 @@ class DoorSelector: Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     fun onPlayerLeave(e: PlayerQuitEvent){
         selectedBlocks.remove(e.player.uniqueId)
     }
