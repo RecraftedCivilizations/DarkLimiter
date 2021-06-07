@@ -31,7 +31,14 @@ class BlockLimiter: Listener {
      * and it will add an entry to the [playerBlocks]
      */
     private fun placedBlock(uuid: UUID, block: Block){
-        TODO("NOT YET IMPLEMENTED")
+        // If we don't have a set of blocks yet
+        if (playerBlocks[uuid] == null){
+            //Create one
+            playerBlocks[uuid] = emptySet<Block>().toMutableSet()
+        }
+
+        // Add the block to the player set
+        playerBlocks[uuid]!!.add(block)
     }
 
     /**
