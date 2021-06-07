@@ -65,7 +65,10 @@ class BlockLimiter: Listener {
      * Reset all blocks for a certain player
      */
     fun resetAllBlocksForPlayer(uuid: UUID){
-        TODO("NOT YET IMPLEMENTED")
+        val blocks = playerBlocks[uuid]?: return
+        for (block in blocks){
+            deleteBlock(block)
+        }
     }
 
     /**
