@@ -81,14 +81,7 @@ class BlockLimiter: Listener {
         block.type = Material.AIR
 
         // Delete it from the list
-        deleteBlockFromPlayerBlocks(block)
-    }
-
-    /**
-     * Delete a block from the [playerBlocks]
-     */
-    private fun deleteBlockFromPlayerBlocks(block: Block){
-        TODO("NOT YET IMPLEMENTED")
+        removeBlock(block)
     }
 
     @EventHandler(ignoreCancelled = true)
