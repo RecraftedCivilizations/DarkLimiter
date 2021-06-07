@@ -1,5 +1,7 @@
 package com.github.recraftedcivilizations.darklimiter.limiters
 
+import com.github.darkvanityoflight.recraftedcore.api.BukkitWrapper
+import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -75,7 +77,11 @@ class BlockLimiter: Listener {
      * Delete a block from the world and from the [playerBlocks]
      */
     fun deleteBlock(block: Block){
-        TODO("NOT YET IMPLEMENTED")
+        // Set the block to air, essentially removing it
+        block.type = Material.AIR
+
+        // Delete it from the list
+        deleteBlockFromPlayerBlocks(block)
     }
 
     /**
