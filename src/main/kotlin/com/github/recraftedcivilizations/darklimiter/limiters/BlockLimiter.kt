@@ -44,9 +44,21 @@ class BlockLimiter: Listener {
 
     /**
      * Remove a block from the [playerBlocks]
+     * @param block The block to remove
      */
-    fun removeBlock(block: Block){
-        TODO("NOT YET IMPLEMENTED")
+    private fun removeBlock(block: Block){
+        // Loop through all map entries
+        for ((player, blocks) in playerBlocks){
+            // Loop through all blocks for every player
+            for (pBlock in blocks){
+                // Check if the block to remove equals the current block
+                if (pBlock == block){
+                    // If yes remove it and return
+                    playerBlocks[player]!!.remove(block)
+                    return
+                }
+            }
+        }
     }
 
     /**
