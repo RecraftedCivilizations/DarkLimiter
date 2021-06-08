@@ -1,6 +1,7 @@
 package com.github.recraftedcivilizations.darklimiter.limiters
 
 import com.github.darkvanityoflight.recraftedcore.api.BukkitWrapper
+import com.github.recraftedcivilizations.darklimiter.parser.ConfigParser
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.event.EventHandler
@@ -17,7 +18,7 @@ import java.util.*
 /**
  * Limit the amount of blocks a player can place at once
  */
-class BlockLimiter: Listener {
+class BlockLimiter(private val configParser: ConfigParser, private val bukkitWrapper: BukkitWrapper = BukkitWrapper()): Listener {
     private val playerBlocks: MutableMap<UUID, MutableSet<Block>> = emptyMap<UUID, MutableSet<Block>>().toMutableMap()
 
 
@@ -26,7 +27,17 @@ class BlockLimiter: Listener {
      * @param uuid The uuid of the player you want to check for
      */
     fun canPlaceOneMore(uuid: UUID): Boolean{
-        TODO("NOT YET IMPLEMENTED")
+        // Get the player
+        val player = bukkitWrapper.getPlayer(uuid)
+        // Check if the player has the unlimited permission
+        if (player?.hasPermission("dlm.blocks.unlimited") == true){
+            // The player has the unlimited perm means he can set as many blocks as he wants too
+            return true
+        }
+
+        // Get the number of blocks placed, if it is null set it to 0
+        val blockLen = playerBlocks[uuid]?.size?:0
+        return blockLen < configParser.maxNumOfBlocks!!
     }
 
     /**
@@ -86,6 +97,9 @@ class BlockLimiter: Listener {
 
     @EventHandler(ignoreCancelled = true)
     fun onBlockPlace(e: BlockPlaceEvent){
+        // If dlm.blocks is disabled for the person do nothing
+        if (e.player.hasPermission("dlm.blocks.disabled")) return
+
         if (canPlaceOneMore(e.player.uniqueId)){
             // Register the placed block
             placedBlock(e.player.uniqueId, e.block)
@@ -101,6 +115,8 @@ class BlockLimiter: Listener {
 
     @EventHandler(ignoreCancelled = true)
     fun onPlayerLeave(e: PlayerQuitEvent){
+        // If dlm.blocks is disabled for the person do nothing
+        if (e.player.hasPermission("dlm.blocks.disabled")) return
         resetAllBlocksForPlayer(e.player.uniqueId)
     }
 
