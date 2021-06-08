@@ -28,6 +28,10 @@ commands:
     usage: Select a player door using leftclick with a stick and then /forceUnlock
     permission: dlm.unlock.force
     permission-message: You are not allowed to force unlock player doors
+  clearAllBlocks:
+    usage: /clearAllBlocks <Player name|None>
+    permission: dlm.blocks.reset
+    permission-message: You can't reset any blocks
 
 permissions:
   dlm.lock.player:
@@ -57,3 +61,6 @@ permissions:
   dlm.blocks.reset.other:
     default: op
     description: Reset all blocks for someone else
+  dlm.blocks.reset:
+    default: true
+    description: Allows a player to reset his own blocks
