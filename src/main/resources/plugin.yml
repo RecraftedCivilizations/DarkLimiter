@@ -54,3 +54,6 @@ permissions:
   dlm.blocks.disabled:
     default: false
     description: The blocks placed by this player will not be limited
+  dlm.blocks.reset.other:
+    default: op
+    description: Reset all blocks for someone else
