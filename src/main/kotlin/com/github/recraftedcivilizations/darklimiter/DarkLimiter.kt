@@ -3,6 +3,7 @@ package com.github.recraftedcivilizations.darklimiter
 import com.github.darkvanityoflight.recraftedcore.ARecraftedPlugin
 import com.github.recraftedcivilizations.darklimiter.commands.*
 import com.github.recraftedcivilizations.darklimiter.limiters.DoorLocker
+import com.github.recraftedcivilizations.darklimiter.parser.ConfigParser
 import com.github.recraftedcivilizations.darklimiter.parser.dataparser.YMLDataSource
 import org.bukkit.Bukkit
 
@@ -10,6 +11,7 @@ class DarkLimiter: ARecraftedPlugin() {
 
     override fun onEnable() {
         val dataParser = YMLDataSource(dataFolder.absolutePath)
+        val configParser = ConfigParser(config)
 
         // Create the Door locker and selector
         val locker = DoorLocker(dataParser.getAllDoors())
