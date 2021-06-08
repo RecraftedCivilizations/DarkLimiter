@@ -48,3 +48,9 @@ permissions:
   dlm.unlock.force:
     default: op
     description: Enable a player to force unlock doors of other players
+  dlm.blocks.unlimited:
+    default: op
+    description: Enables a player to place as many blocks as he wants too
+  dlm.blocks.disabled:
+    default: false
+    description: The blocks placed by this player will not be limited
