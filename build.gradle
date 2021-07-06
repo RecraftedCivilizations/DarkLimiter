@@ -20,6 +20,7 @@ repositories {
     mavenCentral()
     maven { url 'https://repo.repsy.io/mvn/darkvanityoflight/recraftedcivilizations' }
     spigot()
+    jcenter()
 }
 // Kotlin stuff
 dependencies {
@@ -32,6 +33,7 @@ dependencies {
 dependencies {
     compileOnly spigotApi()
     compileOnly 'com.github.recraftedcivilizations:RecraftedCore:3.+'
+    compileOnly 'com.github.recraftedcivilizations:DarkCitizens:1.+'
 }
 
 // Test stuff
@@ -56,7 +58,7 @@ bukkit {
     meta {
         name = pluginName
         description = pluginDescription
-        main = group + '.' + pluginName.toLowerCase() + '.' + 'Main'
+        main = group + '.' + pluginName.toLowerCase() + '.' + pluginName
         version = version
         authors = pluginAuthors
     }
